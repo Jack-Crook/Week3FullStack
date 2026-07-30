@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 20rem; margin: 4rem auto; }
+      label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+      input { width: 100%; box-sizing: border-box; margin-bottom: 1rem; padding: 0.5rem; }
+      button { width: 100%; padding: 0.5rem; font-weight: 600; }
+
+      .hidemessage { display: none; }
+      .showmessage { display: block; margin-bottom: 1rem; padding: 0.5rem; color: #991b1b; background: #fee2e2; }
+    </style>
+  </head>
+  <body>
+    <h1>Sign in</h1>
+
+    <div id="errormsg" class="hidemessage">User credentials do not match</div>
+
+    <form id="loginform" method="POST" action="/login/attempt">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Log in</button>
+    </form>
+
+    <script>
+      document.getElementById('loginform').addEventListener('submit', function (event) {
+        // Stop the browser navigating away so we can post via AJAX instead.
+        event.preventDefault();
+
+        var body = new URLSearchParams({
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value
+        });
+
+        fetch('/login/attempt', { method: 'POST', body: body })
+          .then(function (response) { return response.json(); })
+          .then(function (result) {
+            var errormsg = document.getElementById('errormsg');
+
+            if (result.ok) {
+              errormsg.className = 'hidemessage';
+              window.location.href = '/account';
+            } else {
+              errormsg.className = 'showmessage';
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
